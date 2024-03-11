@@ -1,0 +1,5 @@
+bin/
+obj/
+input.txt
+output.txt
+sample_cert.pfx
