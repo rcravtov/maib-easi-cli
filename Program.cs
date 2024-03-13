@@ -10,14 +10,32 @@ class Program
 
     static void Main(string[] args)
     {
-        if (args.Length != 4)
+
+        if (args.Length == 5 && args[0] == "hash")
         {
-            Console.WriteLine("Usage: input certificate password output");
-            Environment.Exit(1);
+
+            string input = File.ReadAllText(args[1]);
+            string hash = GetHash(input, args[2], args[3]);
+            File.WriteAllText(args[4], hash);
+            Environment.Exit(0);
         }
-        string input = File.ReadAllText(args[0]);
-        string hash = GetHash(input, args[1], args[2]);
-        File.WriteAllText(args[3], hash);
+
+        if (args.Length == 3 && args[0] == "base64")
+        {
+            string input = File.ReadAllText(args[1]);
+            string inputBase64 = GetBase64(input);
+            File.WriteAllText(args[2], inputBase64);
+            Environment.Exit(0);
+        }
+
+        PrintUsageAndExit();
+    }
+
+    static void PrintUsageAndExit()
+    {
+        Console.WriteLine("Usage: hash <input> <certificate> <password> <output>");
+        Console.WriteLine("Usage: base64 <input> <output>");
+        Environment.Exit(1);
     }
 
     static string GetHash(string data, string certFilePath, string certPass)
@@ -35,6 +53,13 @@ class Program
         byte[] signedData = signedCms.Encode();
 
         return Convert.ToBase64String(signedData);
+    }
+
+    static string GetBase64(string message)
+    {
+        System.IO.MemoryStream stream = new MemoryStream(System.Text.Encoding.Unicode.GetBytes(message));
+        byte[] messageBytes = stream.ToArray();
+        return Convert.ToBase64String(messageBytes);
     }
 
 }
